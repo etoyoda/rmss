@@ -1,4 +1,7 @@
 # UNIX ドメインソケットの読み書きをする練習
+# - "hello" メッセージを送信
+# - "ack" メッセージを逆向きに送って全二重であることを確認
+# - なお、各メッセージは WMO ソケット手順でメッセージ長を伝達している
 
 require 'socket'
 
@@ -18,6 +21,8 @@ def parent(sockname, cpid)
   UNIXServer.open(sockname) {|server|
     sock = server.accept
     sendbull(sock, "hello")
+    bull = recvbull(sock)
+    STDERR.puts bull.inspect
   }
 ensure
   File.unlink(sockname)
@@ -27,6 +32,7 @@ def child sockname
   UNIXSocket.open(sockname) {|sock|
     bull = recvbull(sock)
     STDERR.puts bull.inspect
+    sendbull(sock, "ack")
   }
 end
 
