@@ -5,6 +5,7 @@
 # 複数回に分けて受信する必要がある。
 
 require 'socket'
+require 'digest/md5'
 
 def sendbull(sock, bull)
   shdr = sprintf('%08u%2s', bull.size, 'BI')
@@ -12,7 +13,6 @@ def sendbull(sock, bull)
   raise Errno::EMSGSIZE unless r == shdr.size
   sock.sendmsg(bull)
   raise Errno::EMSGSIZE unless r == shdr.size
-  STDERR.puts "#{bull.size} bytes sent"
   nil
 end
 
@@ -39,6 +39,7 @@ def parent(sockname, cpid)
     msg = "x" * 1024
     11.times {
       sendbull(sock, msg)
+      STDERR.puts "#{Digest::MD5.hexdigest(msg)} #{msg.size} bytes sent"
       msg = msg * 2
     }
   }
@@ -50,7 +51,7 @@ def child sockname
   UNIXSocket.open(sockname) {|sock|
     11.times {
       bull = recvbull(sock)
-      STDERR.printf("%u bytes received\n", bull.size)
+      STDERR.printf("%s %u bytes recved\n", Digest::MD5.hexdigest(bull), bull.size)
     }
   }
 end
