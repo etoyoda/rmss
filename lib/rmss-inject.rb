@@ -10,7 +10,7 @@ class RMSSInject
 
   def main sock, fnam
     msg = (fnam ? File.open(fnam) : STDIN).read
-    putconn(sock, msg)
+    recvsock(sock, msg)
   end
 
   def initialize
@@ -21,9 +21,9 @@ class RMSSInject
     optparse!(argv)
     uriout = @args.shift
     filein = @args.shift
-    main(getconn(uriout), filein)
+    main(getconn(uriout, false), filein)
   end
 
 end
 
-RMSSPrint.new.run(ARGV) if $0 == __FILE__
+RMSSInject.new.run(ARGV) if $0 == __FILE__
