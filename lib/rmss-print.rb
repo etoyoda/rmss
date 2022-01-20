@@ -1,7 +1,7 @@
 # ソケット監視プログラム。
 #
-# rmss-print.rb unix /path
-# rmss-print.rb tcp host port
+# rmss-print.rb [-mode=active] [file:///socket|jmasock://host:port]
+#
 
 require 'rmss'
 
