@@ -3,6 +3,7 @@ require 'socket'
 
 module RMSS
 
+  # ソケット sock に電文 msg を送る。種別は msgtype で指定する。
   def sendsock(sock, msg, msgtype = 'BI')
     shdr = sprintf('%08u%2s', msg.size, msgtype)
     r = sock.sendmsg(shdr)
@@ -12,6 +13,7 @@ module RMSS
     nil
   end
 
+  # ソケット sock から電文を取得する。種別と電文本体が返る。
   def recvsock(sock)
     shdr = sock.recvmsg(10)
     raise Errno::EMSGSIZE unless shdr[0].size == 10
@@ -30,6 +32,7 @@ module RMSS
     [msgtype, buf.join]
   end
 
+  # 汎用的なコマンドライン解析。opts はオプションのデフォルト値となる
   def optparse argv, opts = nil
     opts = (opts ? opts.dup : Hash.new)
     ary = []
@@ -50,17 +53,24 @@ module RMSS
     @args, @opts = optparse(argv, opts)
   end
 
-  def getconn argv, opts = nil
-    args, opts = optparse(argv)
+  def getconn suri, serverp = true
     require 'uri'
-    uri = URI.parse(args.first)
+    uri = URI.parse(suri)
     case uri.scheme
-    when 'file' then
-      serv = UNIXServer.new(uri.path)
-      return serv.accept
-    when 'tcp' then
-      serv = TCPServer.new(uri.host, uri.port)
-      return serv.accept
+    when 'file', 'unix' then
+      if serverp then
+        serv = UNIXServer.new(uri.path)
+        return serv.accept
+      else
+        return UNIXSocket.new(uri.path)
+      end
+    when 'jmasock' then
+      if serverp then
+        serv = TCPServer.new(uri.host, uri.port)
+        return serv.accept
+      else
+        return TCPSocket.new(uri.host, uri.port)
+      end
     end
     raise "unknown scheme #{scheme}"
   end

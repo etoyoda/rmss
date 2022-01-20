@@ -18,9 +18,15 @@ class RMSSPrint
     puts "# disconnected"
   end
 
+  def initialize
+    @args, @opts = nil
+  end
+
   def run argv
+    optparse!(argv, :mode=>'passive')
+    passivep = @opts[:mode] == 'passive'
     loop {
-      mainloop(getconn(argv))
+      mainloop(getconn(argv, passivep))
     }
   end
 
