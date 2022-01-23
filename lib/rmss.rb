@@ -16,7 +16,11 @@ module RMSS
   # ソケット sock から電文を取得する。種別と電文本体が返る。
   def recvsock(sock)
     shdr = sock.recvmsg(10)
-    raise Errno::EMSGSIZE unless shdr[0].size == 10
+    unless shdr[0].size == 10
+      raise Errno::EPIPE if shdr[0] == ''
+      STDERR.puts shdr.inspect
+      raise Errno::EMSGSIZE
+    end
     msgsize = shdr.first[0,8].to_i
     msgtype = shdr.first[8,2]
     recvsize = msgsize

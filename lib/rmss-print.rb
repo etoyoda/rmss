@@ -11,10 +11,13 @@ class RMSSPrint
   def mainloop sock
     puts "# accepts"
     loop {
-      msgtype, msg = getsock(sock)
+      msgtype, msg = recvsock(sock)
       puts "\a# message #{msgtype}"
       puts msg
     }
+  rescue Errno::EPIPE
+    puts "# epipe"
+  ensure
     puts "# disconnected"
   end
 

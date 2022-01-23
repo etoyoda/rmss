@@ -1,7 +1,5 @@
 # ソケット監視プログラム。
 #
-# rmss-print.rb unix /path
-# rmss-print.rb tcp host port
 
 require 'rmss'
 
@@ -10,7 +8,7 @@ class RMSSInject
 
   def main sock, fnam
     msg = (fnam ? File.open(fnam) : STDIN).read
-    recvsock(sock, msg)
+    sendsock(sock, msg)
   end
 
   def initialize
