@@ -63,20 +63,27 @@ module RMSS
     case uri.scheme
     when 'file', 'unix' then
       if serverp then
+        File.unlink(uri.path) rescue Errno::ENOENT
         serv = UNIXServer.new(uri.path)
-        return serv.accept
+        begin
+          yield serv.accept
+        ensure
+          File.unlink(uri.path)
+        end
       else
-        return UNIXSocket.new(uri.path)
+        yield UNIXSocket.new(uri.path)
       end
     when 'jmasock' then
       if serverp then
         serv = TCPServer.new(uri.host, uri.port)
-        return serv.accept
+        yield serv.accept
       else
-        return TCPSocket.new(uri.host, uri.port)
+        yield TCPSocket.new(uri.host, uri.port)
       end
+    else
+      raise "unknown scheme #{scheme}"
     end
-    raise "unknown scheme #{scheme}"
+    return serverp
   end
 
 end # module RMSS

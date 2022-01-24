@@ -19,7 +19,7 @@ class RMSSInject
     optparse!(argv)
     uriout = @args.shift
     filein = @args.shift
-    main(getconn(uriout, false), filein)
+    getconn(uriout, false){|conn| main(conn, filein) }
   end
 
 end

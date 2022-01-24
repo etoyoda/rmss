@@ -29,7 +29,7 @@ class RMSSPrint
     optparse!(argv, :mode=>'passive')
     passivep = @opts[:mode] == 'passive'
     loop {
-      mainloop(getconn(@args.first, passivep))
+      getconn(@args.first, passivep){|conn| mainloop(conn)}
     }
   end
 
