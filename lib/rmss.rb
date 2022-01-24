@@ -63,12 +63,11 @@ module RMSS
     case uri.scheme
     when 'file', 'unix' then
       if serverp then
-        File.unlink(uri.path) rescue Errno::ENOENT
         serv = UNIXServer.new(uri.path)
         begin
           yield serv.accept
         ensure
-          File.unlink(uri.path)
+          File.unlink(uri.path) rescue Errno::ENOENT
         end
       else
         yield UNIXSocket.new(uri.path)

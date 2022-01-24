@@ -30,6 +30,7 @@ class RMSSPrint
     passivep = @opts[:mode] == 'passive'
     loop {
       getconn(@args.first, passivep){|conn| mainloop(conn)}
+      break if @opts[:once]
     }
   end
 
