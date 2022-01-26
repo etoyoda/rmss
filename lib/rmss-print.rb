@@ -12,8 +12,16 @@ class RMSSPrint
     puts "# accepts"
     loop {
       msgtype, msg = recvsock(sock)
+      # メッセージの表示
       puts "\a# message #{msgtype}"
       puts msg
+      # ヘルスチェック応答
+      if msgtype == 'EN' and msg == 'chk' then
+        sendsock(sock, 'CHK', 'EN')
+      # チェックポイント応答
+      elsif /^(aN|bI|fX)$/ =~ msgtype then
+        sendsock(sock, msg.byteslice(0,30), 'EN')
+      end
     }
   rescue Errno::EPIPE
     puts "# epipe"
