@@ -73,11 +73,13 @@ module RMSS
         yield UNIXSocket.new(uri.path)
       end
     when 'jmasock' then
+      host = uri.host
+      host = $1 if /^\[(.+)\]$/ =~ host
       if serverp then
-        serv = TCPServer.new(uri.host, uri.port)
+        serv = TCPServer.new(host, uri.port)
         yield serv.accept
       else
-        yield TCPSocket.new(uri.host, uri.port)
+        yield TCPSocket.new(host, uri.port)
       end
     else
       raise "unknown scheme #{scheme}"
