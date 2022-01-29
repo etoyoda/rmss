@@ -8,7 +8,15 @@ class RMSSInject
 
   def main sock, fnam
     msg = (fnam ? File.open(fnam) : STDIN).read
-    sendsock(sock, msg)
+    msgtype = @opts[:msgtype] || 'bI'
+    sendsock(sock, msg, msgtype)
+    # チェックポイント要求をしていたら応答を受ける
+    if /^(bI|aN|fX)$/ =~ msgtype then
+      mt, mr = recvsock(sock)
+      raise "unexpected msgtype #{mt}" unless 'EN' == mt
+      raise "wrong checkpoint" unless 'ACK' + msg.byteslice(0,30) == mr
+      STDERR.puts "checkpoint ok"
+    end
   end
 
   def initialize

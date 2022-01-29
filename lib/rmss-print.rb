@@ -20,7 +20,7 @@ class RMSSPrint
         sendsock(sock, 'CHK', 'EN')
       # チェックポイント応答
       elsif /^(aN|bI|fX)$/ =~ msgtype then
-        sendsock(sock, msg.byteslice(0,30), 'EN')
+        sendsock(sock, 'ACK' + msg.byteslice(0,30), 'EN')
       end
     }
   rescue Errno::EPIPE
