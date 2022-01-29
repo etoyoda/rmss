@@ -1,5 +1,6 @@
 
 require 'socket'
+require 'timeout'
 
 module RMSS
 
@@ -79,7 +80,23 @@ module RMSS
         serv = TCPServer.new(host, uri.port)
         yield serv.accept
       else
-        yield TCPSocket.new(host, uri.port)
+        cntmo = (@opts[:cntmo] || 60).to_i
+        cnnrt = (@opts[:cnnrt] || 10).to_i
+        cnirt = (@opts[:cnirt] || 5).to_i
+        # Ruby 2 には TCPSocket.new の :connection_timeout 引数がないので
+        # 面倒な書き方になる
+        cnnrt.times {
+          begin
+            conn = nil
+            Timeout.timeout(cntmo) {
+              conn = TCPSocket.new(host, uri.port)
+            }
+            yield conn
+            break
+          rescue Timeout::Error
+          end
+          sleep(cnirt)
+        }
       end
     else
       raise "unknown scheme #{scheme}"
