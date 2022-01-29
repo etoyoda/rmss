@@ -7,6 +7,7 @@ class RMSSInject
   include RMSS
 
   def main sock, fnam
+    sleep((@opts[:cwait] || 1).to_i)
     msg = (fnam ? File.open(fnam) : STDIN).read
     msgtype = @opts[:msgtype] || 'bI'
     sendsock(sock, msg, msgtype)
