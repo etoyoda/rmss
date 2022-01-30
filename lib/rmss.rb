@@ -4,6 +4,11 @@ require 'timeout'
 
 module RMSS
 
+  def dprint *args
+    return unless @opts[:debug]
+    STDERR.puts(args.inspect)
+  end
+
   # ソケット sock に電文 msg を送る。種別は msgtype で指定する。
   def sendsock(sock, msg, msgtype = 'BI')
     shdr = sprintf('%08u%2s', msg.size, msgtype)
@@ -19,7 +24,7 @@ module RMSS
     shdr = sock.recvmsg(10)
     unless shdr[0].size == 10
       raise Errno::EPIPE if shdr[0] == ''
-      STDERR.puts shdr.inspect
+      dprint(shdr)
       raise Errno::EMSGSIZE
     end
     msgsize = shdr.first[0,8].to_i

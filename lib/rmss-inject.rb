@@ -16,7 +16,7 @@ class RMSSInject
       mt, mr = recvsock(sock)
       raise "unexpected msgtype #{mt}" unless 'EN' == mt
       raise "wrong checkpoint" unless 'ACK' + msg.byteslice(0,30) == mr
-      STDERR.puts "checkpoint ok"
+      dprint "checkpoint ok"
     end
   end
 

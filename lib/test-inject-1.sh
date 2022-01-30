@@ -2,7 +2,7 @@
 
 sock=/tmp/rmss.test1.sock
 
-ruby -I. rmss-print.rb -once file://${sock} &
+ruby -I. rmss-print.rb -debug -once file://${sock} &
 sleep 1
-echo foo | ruby -I. rmss-inject.rb file://${sock}
+echo foo | ruby -I. rmss-inject.rb -debug file://${sock}
 wait

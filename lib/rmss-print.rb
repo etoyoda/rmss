@@ -9,12 +9,12 @@ class RMSSPrint
   include RMSS
 
   def mainloop sock
-    puts "# accepts"
+    dprint "# accepts"
     loop {
       msgtype, msg = recvsock(sock)
       # メッセージの表示
-      puts "\a# message #{msgtype}"
-      puts msg
+      dprint "\a# message #{msgtype}"
+      dprint msg
       # ヘルスチェック応答
       if msgtype == 'EN' and msg == 'chk' then
         sendsock(sock, 'CHK', 'EN')
@@ -24,9 +24,9 @@ class RMSSPrint
       end
     }
   rescue Errno::EPIPE
-    puts "# epipe"
+    dprint "# epipe"
   ensure
-    puts "# disconnected"
+    dprint "# disconnected"
   end
 
   def initialize
